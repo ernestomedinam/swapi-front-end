@@ -7,19 +7,16 @@ const ItemCard = ({ nature, item }) => {
 	const { store, actions } = useContext(Context);
 	const [faved, setFaved] = useState(false);
 	const history = useHistory();
-	useEffect(
-		() => {
-			let faved = false;
-			for (let fav of store.favorites) {
-				if (fav.globalId == item.globalId) {
-					faved = true;
-					break;
-				}
+	useEffect(() => {
+		let faved = false;
+		for (let fav of store.favorites) {
+			if (fav.globalId == item.globalId) {
+				faved = true;
+				break;
 			}
-			setFaved(faved);
-		},
-		[store.favorites]
-	);
+		}
+		setFaved(faved);
+	}, [store.favorites]);
 	return (
 		<div className="card mx-2" style={{ minWidth: 314 + "px", width: 314 + "px" }}>
 			<img src="https://via.placeholder.com/400x200" className="card-img-top" alt="..." />

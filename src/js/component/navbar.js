@@ -11,52 +11,43 @@ export const Navbar = () => {
 	const history = useHistory();
 	const searchRef = useRef();
 	const dropRef = useRef();
-	useEffect(
-		() => {
-			if (store.favorites.length == 0) {
-				setDropped(false);
+	useEffect(() => {
+		if (store.favorites.length == 0) {
+			setDropped(false);
+		}
+	}, [store.favorites.length]);
+	useEffect(() => {
+		const handleClickOutside = event => {
+			if (searchRef.current.contains(event.target)) {
+				return;
 			}
-		},
-		[store.favorites.length]
-	);
-	useEffect(
-		() => {
-			const handleClickOutside = event => {
-				if (searchRef.current.contains(event.target)) {
-					return;
-				}
-				setSearch("");
-			};
-			if (search.length > 2) {
-				document.addEventListener("mousedown", handleClickOutside);
-				actions.getSearch(search);
-			} else {
-				document.removeEventListener("mousedown", handleClickOutside);
-				if (store.searchResults.length > 0) {
-					actions.clearSearch();
-				}
+			setSearch("");
+		};
+		if (search.length > 2) {
+			document.addEventListener("mousedown", handleClickOutside);
+			actions.getSearch(search);
+		} else {
+			document.removeEventListener("mousedown", handleClickOutside);
+			if (store.searchResults.length > 0) {
+				actions.clearSearch();
 			}
-			return () => document.removeEventListener("mousedown", handleClickOutside);
-		},
-		[search]
-	);
-	useEffect(
-		() => {
-			const handleDropUp = event => {
-				if (dropRef.current.contains(event.target)) {
-					return;
-				}
-				setDropped(false);
-			};
-			if (dropped) {
-				document.addEventListener("mousedown", handleDropUp);
-			} else {
-				document.removeEventListener("mousedown", handleDropUp);
+		}
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, [search]);
+	useEffect(() => {
+		const handleDropUp = event => {
+			if (dropRef.current.contains(event.target)) {
+				return;
 			}
-			return () => document.removeEventListener("mousedown", handleDropUp);
-		},
-		[dropped]
-	);
+			setDropped(false);
+		};
+		if (dropped) {
+			document.addEventListener("mousedown", handleDropUp);
+		} else {
+			document.removeEventListener("mousedown", handleDropUp);
+		}
+		return () => document.removeEventListener("mousedown", handleDropUp);
+	}, [dropped]);
 	return (
 		<nav className="navbar navbar-light bg-light mb-0 mb-md-3">
 			<div className="container">

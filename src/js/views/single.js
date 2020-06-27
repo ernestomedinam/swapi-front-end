@@ -8,42 +8,36 @@ export const Single = props => {
 	let { globalId } = useParams();
 	const [single, setSingle] = useState({});
 	const [faved, setFaved] = useState(false);
-	useEffect(
-		() => {
-			let [endpoint, id] = globalId.split("-");
-			console.log("running effect");
-			if ("globalId" in store.single) {
-				// object in single, verify it is the same
-				if (store.single.globalId != globalId) {
-					// different object in single fetch
-					actions.fetchItem(endpoint, id);
-				} else {
-					setSingle(store.single);
-				}
-			} else {
-				// no object in single, fetch
+	useEffect(() => {
+		let [endpoint, id] = globalId.split("-");
+		console.log("running effect");
+		if ("globalId" in store.single) {
+			// object in single, verify it is the same
+			if (store.single.globalId != globalId) {
+				// different object in single fetch
 				actions.fetchItem(endpoint, id);
+			} else {
+				setSingle(store.single);
 			}
-			return () => {
-				console.log("running cleanup");
-				// actions.clearSingle();
-			};
-		},
-		[store.single.globalId, globalId]
-	);
-	useEffect(
-		() => {
-			let isFaved = false;
-			for (let fav of store.favorites) {
-				if (fav.globalId == globalId) {
-					isFaved = true;
-					break;
-				}
+		} else {
+			// no object in single, fetch
+			actions.fetchItem(endpoint, id);
+		}
+		return () => {
+			console.log("running cleanup");
+			// actions.clearSingle();
+		};
+	}, [store.single.globalId, globalId]);
+	useEffect(() => {
+		let isFaved = false;
+		for (let fav of store.favorites) {
+			if (fav.globalId == globalId) {
+				isFaved = true;
+				break;
 			}
-			setFaved(isFaved);
-		},
-		[store.favorites, globalId]
-	);
+		}
+		setFaved(isFaved);
+	}, [store.favorites, globalId]);
 	return (
 		<React.Fragment>
 			{"name" in single && (
