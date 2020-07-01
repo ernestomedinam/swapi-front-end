@@ -89,7 +89,7 @@ export const Navbar = () => {
 						</div>
 					)}
 				</div>
-				<div className="ml-auto ml-md-0" style={{ position: "relative" }}>
+				<div ref={dropRef} className="ml-auto ml-md-0" style={{ position: "relative" }}>
 					<button
 						className="btn btn-primary"
 						onClick={e => store.favorites.length > 0 && setDropped(!dropped)}>
@@ -98,7 +98,7 @@ export const Navbar = () => {
 							<span className="badge badge-pill badge-info">{store.favorites.length}</span>
 						)}
 					</button>
-					<div ref={dropRef} className={dropped ? "sw-favorites" : "d-none"}>
+					<div className={dropped ? "sw-favorites" : "d-none"}>
 						{store.favorites.length > 0 && (
 							<ul>
 								{store.favorites.map(fav => {
