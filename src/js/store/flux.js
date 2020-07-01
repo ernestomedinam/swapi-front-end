@@ -9,7 +9,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			planets: [],
 			vehiclesResponse: {},
 			vehicles: [],
-			favorites: [],
+			favorites: JSON.parse(localStorage.getItem("favorites")) || [],
 			single: {},
 			searchResults: []
 		},
@@ -49,7 +49,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				let url = `${api}${endpoint}/?page=${page}`;
 				try {
 					let response = await fetch(url);
-					let itemList = [];
+					let itemList = store[endpoint];
 					if (response.ok) {
 						let responseObject = await response.json();
 						for (let item of responseObject.results) {
@@ -57,13 +57,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 							item.globalId = `${endpoint}-${item.id}`;
 							itemList.push(item);
 						}
+						localStorage.setItem(endpoint, JSON.stringify(itemList));
+						localStorage.setItem(
+							`${endpoint}Response`,
+							JSON.stringify({
+								count: responseObject.count,
+								previous: responseObject.previous,
+								next: responseObject.next == null ? null : responseObject.next.split("=")[1]
+							})
+						);
+						localStorage.setItem(`${endpoint}Timestamp`, JSON.stringify(new Date().getTime()));
 						setStore({
 							...store,
 							[endpoint]: itemList,
 							[`${endpoint}Response`]: {
 								count: responseObject.count,
 								previous: responseObject.previous,
-								next: responseObject.next.split("=")[1]
+								next: responseObject.next == null ? null : responseObject.next.split("=")[1]
 							}
 						});
 					} else {
@@ -83,6 +93,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			addFavorite: item => {
 				const store = getStore();
+				localStorage.setItem("favorites", JSON.stringify([...store.favorites, item]));
 				setStore({
 					...store,
 					favorites: [...store.favorites, item]
@@ -93,6 +104,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				let newFavs = store.favorites.filter(item => {
 					return item.globalId != globalId;
 				});
+				localStorage.setItem("favorites", JSON.stringify([...store.favorites, newFavs]));
 				setStore({
 					...store,
 					favorites: newFavs
@@ -136,6 +148,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({
 					...store,
 					searchResults: []
+				});
+			},
+			localItems: endpoint => {
+				const store = getStore();
+				setStore({
+					...store,
+					[endpoint]: JSON.parse(localStorage.getItem(endpoint)),
+					[`${endpoint}Response`]: JSON.parse(localStorage.getItem(`${endpoint}Response`))
 				});
 			}
 		}

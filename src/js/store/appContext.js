@@ -21,9 +21,26 @@ const injectContext = PassedComponent => {
 			})
 		);
 		useEffect(() => {
+			// if (localStorage.getItem("store")) {
+			// 	for (let endpoint of state.store.endpoints) {
+			// 		state.actions.localItems(endpoint);
+			// 	}
+			// }
+			console.log(`this is local ${JSON.parse(localStorage.getItem("people"))}`);
 			for (let endpoint of state.store.endpoints) {
-				state.actions.fetchItems(endpoint);
+				if (
+					localStorage.getItem(endpoint) != null &&
+					new Date().getTime() - JSON.parse(localStorage.getItem(`${endpoint}Timestamp`)) < 1000000
+				) {
+					state.actions.localItems(endpoint);
+				} else {
+					state.actions.fetchItems(endpoint);
+				}
 			}
+			return () => {
+				// console.log("running store cleanup");
+				// localStorage.setItem("store", state.store);
+			};
 		}, []);
 		// The initial value for the context is not null anymore, but the current state of this component,
 		// the context will now have a getStore, getActions and setStore functions available, because they were declared
